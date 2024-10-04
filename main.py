@@ -92,9 +92,9 @@ class Player:
         return score
 
     def reveal_card(self, line, col) -> bool:
-        print(line, col)
         if not self.card_board[line][col].is_visible:
             self.card_board[line][col].is_visible = True
+            print(f"Player {self.player_name} reveals the card at [{line},{col}]: it's a {self.card_board[line][col].value} !")
             return True
         else:
             return False
@@ -143,17 +143,26 @@ if __name__ == "__main__":
     i = 1
     while player.has_hidden_cards():
         print(f"__ Turn {i} ___")
-        if i % 2 == 0:
+        if i % 3 == 1:
             print("picking card from deck")
             card = card_deck.draw_card(is_visible=True)
-        else:
+            discarded_card = player.replace_card(
+            card, random.randint(0, 2), random.randint(0, 3)
+            )
+            card_deck.discard_card(discarded_card)
+        elif i % 3 == 2:
             print("picking card from discard pile")
             card = card_deck.get_discarded_card()
-
-        discarded_card = player.replace_card(
-            card, random.randint(0, 2), random.randint(0, 3)
-        )
-        card_deck.discard_card(discarded_card)
+            discarded_card = player.replace_card(
+                card, random.randint(0, 2), random.randint(0, 3)
+            )
+            card_deck.discard_card(discarded_card)
+        else:
+            print("discarding picked card from deck and revealing a card from the board")
+            card = card_deck.draw_card(is_visible=True)
+            card_deck.discard_card(card)
+            while not player.reveal_card(random.randint(0, 2), random.randint(0, 3)):
+                continue
         player.show_board()
         player.compute_score()
         card_deck.show_deck()
