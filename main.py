@@ -61,6 +61,7 @@ class Player:
     def __init__(self, player_name: str) -> None:
         self.player_name: str = player_name
         self.card_board = []
+        self.last_turn = False
 
     def draw_board(self, card_deck: CardDeck) -> None:
         for _ in range(0, 3):
@@ -77,7 +78,7 @@ class Player:
         )
         return card_to_discard
 
-    def compute_score(self) -> int:
+    def compute_current_score(self) -> int:
         score = 0
         unknown = 0
         for col in self.card_board:
@@ -91,10 +92,20 @@ class Player:
         )
         return score
 
+    def compute_final_score(self) -> int:
+        score = 0
+        for col in self.card_board:
+            for card in col:
+                score += card.value
+        print(f"Player {self.player_name} final score is {score}.")
+        return score
+
     def reveal_card(self, line, col) -> bool:
         if not self.card_board[line][col].is_visible:
             self.card_board[line][col].is_visible = True
-            print(f"Player {self.player_name} reveals the card at [{line},{col}]: it's a {self.card_board[line][col].value} !")
+            print(
+                f"Player {self.player_name} reveals the card at [{line},{col}]: it's a {self.card_board[line][col].value} !"
+            )
             return True
         else:
             return False
@@ -117,7 +128,6 @@ class Player:
             for c in col:
                 if c.is_visible == False:
                     has_hidden_cards = True
-        print(has_hidden_cards)
         return has_hidden_cards
 
 
@@ -131,39 +141,70 @@ if __name__ == "__main__":
     print("Starting game")
     card_deck = CardDeck()
     card_deck.reset_deck()
-    player = Player("test_bot")
-    player.draw_board(card_deck)
-    for _ in range(2):
-        # TODO: replace by better algorithm here
-        while not player.reveal_card(random.randint(0, 2), random.randint(0, 3)):
-            continue
-    player.show_board()
-    player.compute_score()
-    card_deck.init_round()
-    i = 1
-    while player.has_hidden_cards():
-        print(f"__ Turn {i} ___")
-        if i % 3 == 1:
-            print("picking card from deck")
-            card = card_deck.draw_card(is_visible=True)
-            discarded_card = player.replace_card(
-            card, random.randint(0, 2), random.randint(0, 3)
-            )
-            card_deck.discard_card(discarded_card)
-        elif i % 3 == 2:
-            print("picking card from discard pile")
-            card = card_deck.get_discarded_card()
-            discarded_card = player.replace_card(
-                card, random.randint(0, 2), random.randint(0, 3)
-            )
-            card_deck.discard_card(discarded_card)
-        else:
-            print("discarding picked card from deck and revealing a card from the board")
-            card = card_deck.draw_card(is_visible=True)
-            card_deck.discard_card(card)
+    player1 = Player("test_bot_1")
+    player2 = Player("test_bot_2")
+    player_list = [player1, player2]
+    for player in player_list:
+        player.draw_board(card_deck)
+        for _ in range(2):
+            # TODO: replace by better algorithm here
             while not player.reveal_card(random.randint(0, 2), random.randint(0, 3)):
                 continue
         player.show_board()
-        player.compute_score()
-        card_deck.show_deck()
+        player.compute_current_score()
+    card_deck.init_round()
+    i = 1
+    # TODO: better ordering function
+    player_ordered_turn = (
+        [player1, player2]
+        if player1.compute_current_score() > player2.compute_current_score()
+        else [player2, player1]
+    )
+    round_over = False
+    while not round_over:
+        print(f"__ Turn {i} ___")
+        for player in player_ordered_turn:
+            if player.last_turn:
+                round_over = True
+                break
+            if i % 3 == 1:
+                print(f"{player.player_name} picking card from deck")
+                card = card_deck.draw_card(is_visible=True)
+                discarded_card = player.replace_card(
+                    card, random.randint(0, 2), random.randint(0, 3)
+                )
+                card_deck.discard_card(discarded_card)
+            elif i % 3 == 2:
+                print(f"{player.player_name} picking card from discard pile")
+                card = card_deck.get_discarded_card()
+                discarded_card = player.replace_card(
+                    card, random.randint(0, 2), random.randint(0, 3)
+                )
+                card_deck.discard_card(discarded_card)
+            else:
+                print(
+                    f"{player.player_name} discarding picked card from deck and revealing a card from the board"
+                )
+                card = card_deck.draw_card(is_visible=True)
+                card_deck.discard_card(card)
+                while not player.reveal_card(
+                    random.randint(0, 2), random.randint(0, 3)
+                ):
+                    continue
+            player.show_board()
+            player.compute_current_score()
+            card_deck.show_deck()
+            player.last_turn = not player.has_hidden_cards()
+            if player.last_turn:
+                print(f"{player.player_name} has revealed all his board ! This is the last turn !")
         i += 1
+    print("Round over !")
+    min_score = 1000
+    best_player = None
+    for player in player_ordered_turn:
+        player_final_score = player.compute_final_score()
+        if player_final_score < min_score:
+            min_score = player_final_score
+            best_player = player
+    print(f"The winner of the round is {best_player.player_name} with a score of {min_score} !")
+   
