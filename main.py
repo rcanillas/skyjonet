@@ -76,6 +76,7 @@ class Player:
         print(
             f"Player {self.player_name} replaces the card {card_to_discard.value} that was {'visible' if card_to_discard.is_visible else 'hidden'} at [{line},{col}] by a card {card.value}"
         )
+        self.check_columns()
         return card_to_discard
 
     def compute_current_score(self) -> int:
@@ -92,6 +93,22 @@ class Player:
         )
         return score
 
+    def check_columns(self) -> None:
+        cards_to_remove = None
+        for i in range(len(self.card_board[0])):
+            card1 = self.card_board[0][i]
+            card2 = self.card_board[1][i]
+            card3 = self.card_board[2][i]
+            if (card1.value == card2.value == card3.value) & (
+                card1.is_visible and card2.is_visible and card3.is_visible
+            ):
+                print("column with same values found !")
+                cards_to_remove = [card1, card2, card3]
+        if cards_to_remove:
+            self.card_board[0].remove(cards_to_remove[0])
+            self.card_board[1].remove(cards_to_remove[1])
+            self.card_board[2].remove(cards_to_remove[2])
+
     def compute_final_score(self) -> int:
         score = 0
         for col in self.card_board:
@@ -106,6 +123,7 @@ class Player:
             print(
                 f"Player {self.player_name} reveals the card at [{line},{col}]: it's a {self.card_board[line][col].value} !"
             )
+            self.check_columns()
             return True
         else:
             return False
@@ -163,6 +181,7 @@ if __name__ == "__main__":
     round_over = False
     while not round_over:
         print(f"__ Turn {i} ___")
+        player.show_board()
         for player in player_ordered_turn:
             if player.last_turn:
                 round_over = True
@@ -170,15 +189,21 @@ if __name__ == "__main__":
             if i % 3 == 1:
                 print(f"{player.player_name} picking card from deck")
                 card = card_deck.draw_card(is_visible=True)
+                print(len(player.card_board[0]))
                 discarded_card = player.replace_card(
-                    card, random.randint(0, 2), random.randint(0, 3)
+                    card,
+                    random.randint(0, 2),
+                    random.randint(0, len(player.card_board[0]) - 1),
                 )
                 card_deck.discard_card(discarded_card)
             elif i % 3 == 2:
                 print(f"{player.player_name} picking card from discard pile")
                 card = card_deck.get_discarded_card()
+                print(len(player.card_board[0]))
                 discarded_card = player.replace_card(
-                    card, random.randint(0, 2), random.randint(0, 3)
+                    card,
+                    random.randint(0, 2),
+                    random.randint(0, len(player.card_board[0]) - 1),
                 )
                 card_deck.discard_card(discarded_card)
             else:
@@ -187,8 +212,10 @@ if __name__ == "__main__":
                 )
                 card = card_deck.draw_card(is_visible=True)
                 card_deck.discard_card(card)
+                print(len(player.card_board[0]))
                 while not player.reveal_card(
-                    random.randint(0, 2), random.randint(0, 3)
+                    random.randint(0, 2),
+                    random.randint(0, len(player.card_board[0]) - 1),
                 ):
                     continue
             player.show_board()
@@ -196,7 +223,9 @@ if __name__ == "__main__":
             card_deck.show_deck()
             player.last_turn = not player.has_hidden_cards()
             if player.last_turn:
-                print(f"{player.player_name} has revealed all his board ! This is the last turn !")
+                print(
+                    f"{player.player_name} has revealed all his board ! This is the last turn !"
+                )
         i += 1
     print("Round over !")
     min_score = 1000
@@ -206,5 +235,6 @@ if __name__ == "__main__":
         if player_final_score < min_score:
             min_score = player_final_score
             best_player = player
-    print(f"The winner of the round is {best_player.player_name} with a score of {min_score} !")
-   
+    print(
+        f"The winner of the round is {best_player.player_name} with a score of {min_score} !"
+    )
