@@ -1,0 +1,684 @@
+Starting game
+Player test_bot_1 reveals the card at [1,1]: it's a 0 !
+Player test_bot_1 reveals the card at [2,0]: it's a 3 !
+[{'actions': ['reveal_card', (1, 1)],
+  'environment': ({'discard_card': None,
+                   'drawn_card': None,
+                   'player_cards': [['X', 'X', 'X', 'X'],
+                                    ['X', 'X', 'X', 'X'],
+                                    ['X', 'X', 'X', 'X']]},),
+  'type': 'first_card_reveal_move'},
+ {'actions': ['reveal_card', (2, 0)],
+  'environment': ({'discard_card': None,
+                   'drawn_card': None,
+                   'player_cards': [['X', 'X', 'X', 'X'],
+                                    ['X', 0, 'X', 'X'],
+                                    ['X', 'X', 'X', 'X']]},),
+  'type': 'second_card_reveal_move'}]
+test_bot_1 cards:
+x - x - x - x
+x - 0 - x - x
+3 - x - x - x
+Player test_bot_2 reveals the card at [2,2]: it's a 3 !
+Player test_bot_2 reveals the card at [1,3]: it's a 0 !
+[{'actions': ['reveal_card', (2, 2)],
+  'environment': ({'discard_card': None,
+                   'drawn_card': None,
+                   'player_cards': [['X', 'X', 'X', 'X'],
+                                    ['X', 'X', 'X', 'X'],
+                                    ['X', 'X', 'X', 'X']]},),
+  'type': 'first_card_reveal_move'},
+ {'actions': ['reveal_card', (1, 3)],
+  'environment': ({'discard_card': None,
+                   'drawn_card': None,
+                   'player_cards': [['X', 'X', 'X', 'X'],
+                                    ['X', 'X', 'X', 'X'],
+                                    ['X', 'X', 3, 'X']]},),
+  'type': 'second_card_reveal_move'}]
+test_bot_2 cards:
+x - x - x - x
+x - x - x - 0
+x - x - 3 - x
+Player test_bot_1 score is 3 with 10 cards not revealed.
+Player test_bot_2 score is 3 with 10 cards not revealed.
+__ Turn 1 ___
+test_bot_2 cards:
+x - x - x - x
+x - x - x - 0
+x - x - 3 - x
+Player test_bot_2 replaces the card 4 that was hidden at [0,3] by a card 0
+test_bot_2 cards:
+x - x - x - 0
+x - x - x - 0
+x - x - 3 - x
+There are 124 cards left in the draw pile.
+There are 2 cards in the discard pile. The value of the last card is 4
+Player test_bot_1 reveals the card at [1,3]: it's a 0 !
+test_bot_1 cards:
+x - x - x - x
+x - 0 - x - 0
+3 - x - x - x
+There are 123 cards left in the draw pile.
+There are 3 cards in the discard pile. The value of the last card is 12
+__ Turn 2 ___
+test_bot_1 cards:
+x - x - x - x
+x - 0 - x - 0
+3 - x - x - x
+Player test_bot_2 replaces the card 1 that was hidden at [1,0] by a card 12
+test_bot_2 cards:
+x - x - x - 0
+12 - x - x - 0
+x - x - 3 - x
+There are 123 cards left in the draw pile.
+There are 3 cards in the discard pile. The value of the last card is 1
+Player test_bot_1 replaces the card 10 that was hidden at [0,0] by a card 1
+test_bot_1 cards:
+1 - x - x - x
+x - 0 - x - 0
+3 - x - x - x
+There are 123 cards left in the draw pile.
+There are 3 cards in the discard pile. The value of the last card is 10
+__ Turn 3 ___
+test_bot_1 cards:
+1 - x - x - x
+x - 0 - x - 0
+3 - x - x - x
+Player test_bot_2 replaces the card 12 that was hidden at [1,1] by a card 10
+test_bot_2 cards:
+x - x - x - 0
+12 - 10 - x - 0
+x - x - 3 - x
+There are 123 cards left in the draw pile.
+There are 3 cards in the discard pile. The value of the last card is 12
+Player test_bot_1 replaces the card 9 that was hidden at [0,3] by a card 12
+test_bot_1 cards:
+1 - x - x - 12
+x - 0 - x - 0
+3 - x - x - x
+There are 123 cards left in the draw pile.
+There are 3 cards in the discard pile. The value of the last card is 9
+__ Turn 4 ___
+test_bot_1 cards:
+1 - x - x - 12
+x - 0 - x - 0
+3 - x - x - x
+Player test_bot_2 replaces the card 12 that was visible at [1,0] by a card 9
+test_bot_2 cards:
+x - x - x - 0
+9 - 10 - x - 0
+x - x - 3 - x
+There are 123 cards left in the draw pile.
+There are 3 cards in the discard pile. The value of the last card is 12
+Player test_bot_1 reveals the card at [1,0]: it's a 3 !
+test_bot_1 cards:
+1 - x - x - 12
+3 - 0 - x - 0
+3 - x - x - x
+There are 122 cards left in the draw pile.
+There are 4 cards in the discard pile. The value of the last card is -2
+__ Turn 5 ___
+test_bot_1 cards:
+1 - x - x - 12
+3 - 0 - x - 0
+3 - x - x - x
+Player test_bot_2 reveals the card at [1,2]: it's a 2 !
+test_bot_2 cards:
+x - x - x - 0
+9 - 10 - 2 - 0
+x - x - 3 - x
+There are 121 cards left in the draw pile.
+There are 5 cards in the discard pile. The value of the last card is -1
+test_bot_1 cards:
+1 - x - x - 12
+3 - 0 - x - 0
+3 - x - x - x
+There are 120 cards left in the draw pile.
+There are 6 cards in the discard pile. The value of the last card is 9
+__ Turn 6 ___
+test_bot_1 cards:
+1 - x - x - 12
+3 - 0 - x - 0
+3 - x - x - x
+Player test_bot_2 replaces the card 0 that was hidden at [2,3] by a card 9
+test_bot_2 cards:
+x - x - x - 0
+9 - 10 - 2 - 0
+x - x - 3 - 9
+There are 120 cards left in the draw pile.
+There are 6 cards in the discard pile. The value of the last card is 0
+Player test_bot_1 replaces the card 1 that was visible at [0,0] by a card 12
+test_bot_1 cards:
+12 - x - x - 12
+3 - 0 - x - 0
+3 - x - x - x
+There are 119 cards left in the draw pile.
+There are 7 cards in the discard pile. The value of the last card is 1
+__ Turn 7 ___
+test_bot_1 cards:
+12 - x - x - 12
+3 - 0 - x - 0
+3 - x - x - x
+Player test_bot_2 reveals the card at [0,2]: it's a 10 !
+test_bot_2 cards:
+x - x - 10 - 0
+9 - 10 - 2 - 0
+x - x - 3 - 9
+There are 118 cards left in the draw pile.
+There are 8 cards in the discard pile. The value of the last card is 10
+test_bot_1 cards:
+12 - x - x - 12
+3 - 0 - x - 0
+3 - x - x - x
+There are 117 cards left in the draw pile.
+There are 9 cards in the discard pile. The value of the last card is 2
+__ Turn 8 ___
+test_bot_1 cards:
+12 - x - x - 12
+3 - 0 - x - 0
+3 - x - x - x
+Player test_bot_2 replaces the card 0 that was visible at [0,3] by a card 2
+test_bot_2 cards:
+x - x - 10 - 2
+9 - 10 - 2 - 0
+x - x - 3 - 9
+There are 117 cards left in the draw pile.
+There are 9 cards in the discard pile. The value of the last card is 0
+Player test_bot_1 replaces the card 12 that was visible at [0,3] by a card 0
+test_bot_1 cards:
+12 - x - x - 0
+3 - 0 - x - 0
+3 - x - x - x
+There are 117 cards left in the draw pile.
+There are 9 cards in the discard pile. The value of the last card is 12
+__ Turn 9 ___
+test_bot_1 cards:
+12 - x - x - 0
+3 - 0 - x - 0
+3 - x - x - x
+test_bot_2 cards:
+x - x - 10 - 2
+9 - 10 - 2 - 0
+x - x - 3 - 9
+There are 116 cards left in the draw pile.
+There are 10 cards in the discard pile. The value of the last card is 7
+Player test_bot_1 reveals the card at [0,1]: it's a -1 !
+test_bot_1 cards:
+12 - -1 - x - 0
+3 - 0 - x - 0
+3 - x - x - x
+There are 115 cards left in the draw pile.
+There are 11 cards in the discard pile. The value of the last card is 6
+__ Turn 10 ___
+test_bot_1 cards:
+12 - -1 - x - 0
+3 - 0 - x - 0
+3 - x - x - x
+Player test_bot_2 replaces the card 2 that was visible at [0,3] by a card 6
+test_bot_2 cards:
+x - x - 10 - 6
+9 - 10 - 2 - 0
+x - x - 3 - 9
+There are 115 cards left in the draw pile.
+There are 11 cards in the discard pile. The value of the last card is 2
+Player test_bot_1 replaces the card 11 that was hidden at [2,1] by a card 1
+test_bot_1 cards:
+12 - -1 - x - 0
+3 - 0 - x - 0
+3 - 1 - x - x
+There are 114 cards left in the draw pile.
+There are 12 cards in the discard pile. The value of the last card is 11
+__ Turn 11 ___
+test_bot_1 cards:
+12 - -1 - x - 0
+3 - 0 - x - 0
+3 - 1 - x - x
+Player test_bot_2 replaces the card 3 that was visible at [2,2] by a card 8
+test_bot_2 cards:
+x - x - 10 - 6
+9 - 10 - 2 - 0
+x - x - 8 - 9
+There are 113 cards left in the draw pile.
+There are 13 cards in the discard pile. The value of the last card is 3
+Player test_bot_1 replaces the card 0 that was visible at [1,1] by a card 3
+test_bot_1 cards:
+12 - -1 - x - 0
+3 - 3 - x - 0
+3 - 1 - x - x
+There are 113 cards left in the draw pile.
+There are 13 cards in the discard pile. The value of the last card is 0
+__ Turn 12 ___
+test_bot_1 cards:
+12 - -1 - x - 0
+3 - 3 - x - 0
+3 - 1 - x - x
+Player test_bot_2 replaces the card -1 that was hidden at [2,0] by a card 0
+test_bot_2 cards:
+x - x - 10 - 6
+9 - 10 - 2 - 0
+0 - x - 8 - 9
+There are 113 cards left in the draw pile.
+There are 13 cards in the discard pile. The value of the last card is -1
+Player test_bot_1 replaces the card 11 that was hidden at [0,2] by a card -1
+test_bot_1 cards:
+12 - -1 - -1 - 0
+3 - 3 - x - 0
+3 - 1 - x - x
+There are 113 cards left in the draw pile.
+There are 13 cards in the discard pile. The value of the last card is 11
+__ Turn 13 ___
+test_bot_1 cards:
+12 - -1 - -1 - 0
+3 - 3 - x - 0
+3 - 1 - x - x
+Player test_bot_2 replaces the card 10 that was visible at [0,2] by a card 11
+test_bot_2 cards:
+x - x - 11 - 6
+9 - 10 - 2 - 0
+0 - x - 8 - 9
+There are 113 cards left in the draw pile.
+There are 13 cards in the discard pile. The value of the last card is 10
+test_bot_1 cards:
+12 - -1 - -1 - 0
+3 - 3 - x - 0
+3 - 1 - x - x
+There are 112 cards left in the draw pile.
+There are 14 cards in the discard pile. The value of the last card is 4
+__ Turn 14 ___
+test_bot_1 cards:
+12 - -1 - -1 - 0
+3 - 3 - x - 0
+3 - 1 - x - x
+Player test_bot_2 replaces the card 9 that was visible at [2,3] by a card 4
+test_bot_2 cards:
+x - x - 11 - 6
+9 - 10 - 2 - 0
+0 - x - 8 - 4
+There are 112 cards left in the draw pile.
+There are 14 cards in the discard pile. The value of the last card is 9
+Player test_bot_1 replaces the card 0 that was visible at [0,3] by a card 0
+test_bot_1 cards:
+12 - -1 - -1 - 0
+3 - 3 - x - 0
+3 - 1 - x - x
+There are 111 cards left in the draw pile.
+There are 15 cards in the discard pile. The value of the last card is 0
+__ Turn 15 ___
+test_bot_1 cards:
+12 - -1 - -1 - 0
+3 - 3 - x - 0
+3 - 1 - x - x
+Player test_bot_2 replaces the card 0 that was visible at [1,3] by a card 9
+test_bot_2 cards:
+x - x - 11 - 6
+9 - 10 - 2 - 9
+0 - x - 8 - 4
+There are 110 cards left in the draw pile.
+There are 16 cards in the discard pile. The value of the last card is 0
+Player test_bot_1 reveals the card at [2,2]: it's a 11 !
+test_bot_1 cards:
+12 - -1 - -1 - 0
+3 - 3 - x - 0
+3 - 1 - 11 - x
+There are 109 cards left in the draw pile.
+There are 17 cards in the discard pile. The value of the last card is 8
+__ Turn 16 ___
+test_bot_1 cards:
+12 - -1 - -1 - 0
+3 - 3 - x - 0
+3 - 1 - 11 - x
+Player test_bot_2 replaces the card 8 that was visible at [2,2] by a card 8
+test_bot_2 cards:
+x - x - 11 - 6
+9 - 10 - 2 - 9
+0 - x - 8 - 4
+There are 109 cards left in the draw pile.
+There are 17 cards in the discard pile. The value of the last card is 8
+Player test_bot_1 replaces the card -1 that was hidden at [2,3] by a card 8
+test_bot_1 cards:
+12 - -1 - -1 - 0
+3 - 3 - x - 0
+3 - 1 - 11 - 8
+There are 109 cards left in the draw pile.
+There are 17 cards in the discard pile. The value of the last card is -1
+__ Turn 17 ___
+test_bot_1 cards:
+12 - -1 - -1 - 0
+3 - 3 - x - 0
+3 - 1 - 11 - 8
+Player test_bot_2 replaces the card 9 that was visible at [1,3] by a card 1
+test_bot_2 cards:
+x - x - 11 - 6
+9 - 10 - 2 - 1
+0 - x - 8 - 4
+There are 108 cards left in the draw pile.
+There are 18 cards in the discard pile. The value of the last card is 9
+test_bot_1 cards:
+12 - -1 - -1 - 0
+3 - 3 - x - 0
+3 - 1 - 11 - 8
+There are 107 cards left in the draw pile.
+There are 19 cards in the discard pile. The value of the last card is -1
+__ Turn 18 ___
+test_bot_1 cards:
+12 - -1 - -1 - 0
+3 - 3 - x - 0
+3 - 1 - 11 - 8
+Player test_bot_2 replaces the card 2 that was hidden at [0,0] by a card -1
+test_bot_2 cards:
+-1 - x - 11 - 6
+9 - 10 - 2 - 1
+0 - x - 8 - 4
+There are 107 cards left in the draw pile.
+There are 19 cards in the discard pile. The value of the last card is 2
+Player test_bot_1 replaces the card 11 that was hidden at [1,2] by a card 2
+test_bot_1 cards:
+12 - -1 - -1 - 0
+3 - 3 - 2 - 0
+3 - 1 - 11 - 8
+There are 107 cards left in the draw pile.
+There are 19 cards in the discard pile. The value of the last card is 11
+test_bot_1 has revealed all his board ! This is the last turn !
+__ Turn 19 ___
+test_bot_1 cards:
+12 - -1 - -1 - 0
+3 - 3 - 2 - 0
+3 - 1 - 11 - 8
+Player test_bot_2 replaces the card 2 that was visible at [1,2] by a card 11
+test_bot_2 cards:
+-1 - x - 11 - 6
+9 - 10 - 11 - 1
+0 - x - 8 - 4
+There are 107 cards left in the draw pile.
+There are 19 cards in the discard pile. The value of the last card is 2
+Round over !
+Player test_bot_2 final score is 73.
+Player test_bot_1 final score is 41.
+The winner of the round is test_bot_1 with a score of 41 !
+[{'actions': ['reveal_card', (1, 1)],
+  'environment': ({'discard_card': None,
+                   'drawn_card': None,
+                   'player_cards': [['X', 'X', 'X', 'X'],
+                                    ['X', 'X', 'X', 'X'],
+                                    ['X', 'X', 'X', 'X']]},),
+  'type': 'first_card_reveal_move'},
+ {'actions': ['reveal_card', (2, 0)],
+  'environment': ({'discard_card': None,
+                   'drawn_card': None,
+                   'player_cards': [['X', 'X', 'X', 'X'],
+                                    ['X', 0, 'X', 'X'],
+                                    ['X', 'X', 'X', 'X']]},),
+  'type': 'second_card_reveal_move'},
+ {'actions': ['from_deck', 'reveal_card', (1, 3)],
+  'environment': ({'discard_card': 4,
+                   'drawn_card': 12,
+                   'player_cards': [['X', 'X', 'X', 'X'],
+                                    ['X', 0, 'X', 'X'],
+                                    [3, 'X', 'X', 'X']]},),
+  'type': 'reveal_from_deck_move'},
+ {'actions': ['from_discard', 'replace_card', (0, 0)],
+  'environment': ({'discard_card': 1,
+                   'drawn_card': 1,
+                   'player_cards': [['X', 'X', 'X', 'X'],
+                                    ['X', 0, 'X', 0],
+                                    [3, 'X', 'X', 'X']]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_discard', 'replace_card', (0, 3)],
+  'environment': ({'discard_card': 12,
+                   'drawn_card': 12,
+                   'player_cards': [[1, 'X', 'X', 'X'],
+                                    ['X', 0, 'X', 0],
+                                    [3, 'X', 'X', 'X']]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_deck', 'reveal_card', (1, 0)],
+  'environment': ({'discard_card': 12,
+                   'drawn_card': -2,
+                   'player_cards': [[1, 'X', 'X', 12],
+                                    ['X', 0, 'X', 0],
+                                    [3, 'X', 'X', 'X']]},),
+  'type': 'reveal_from_deck_move'},
+ {'actions': ['from_deck', 'reveal_card', (1, 0)],
+  'environment': ({'discard_card': -1,
+                   'drawn_card': 9,
+                   'player_cards': [[1, 'X', 'X', 12],
+                                    [3, 0, 'X', 0],
+                                    [3, 'X', 'X', 'X']]},),
+  'type': 'reveal_from_deck_move'},
+ {'actions': ['from_deck', 'replace_card', (0, 0)],
+  'environment': ({'discard_card': 0,
+                   'drawn_card': 12,
+                   'player_cards': [[1, 'X', 'X', 12],
+                                    [3, 0, 'X', 0],
+                                    [3, 'X', 'X', 'X']]},),
+  'type': 'replace_from_deck_move'},
+ {'actions': ['from_deck', 'reveal_card', (0, 0)],
+  'environment': ({'discard_card': 10,
+                   'drawn_card': 2,
+                   'player_cards': [[12, 'X', 'X', 12],
+                                    [3, 0, 'X', 0],
+                                    [3, 'X', 'X', 'X']]},),
+  'type': 'reveal_from_deck_move'},
+ {'actions': ['from_discard', 'replace_card', (0, 3)],
+  'environment': ({'discard_card': 0,
+                   'drawn_card': 0,
+                   'player_cards': [[12, 'X', 'X', 12],
+                                    [3, 0, 'X', 0],
+                                    [3, 'X', 'X', 'X']]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_deck', 'reveal_card', (0, 1)],
+  'environment': ({'discard_card': 7,
+                   'drawn_card': 6,
+                   'player_cards': [[12, 'X', 'X', 0],
+                                    [3, 0, 'X', 0],
+                                    [3, 'X', 'X', 'X']]},),
+  'type': 'reveal_from_deck_move'},
+ {'actions': ['from_deck', 'replace_card', (2, 1)],
+  'environment': ({'discard_card': 2,
+                   'drawn_card': 1,
+                   'player_cards': [[12, -1, 'X', 0],
+                                    [3, 0, 'X', 0],
+                                    [3, 'X', 'X', 'X']]},),
+  'type': 'replace_from_deck_move'},
+ {'actions': ['from_discard', 'replace_card', (1, 1)],
+  'environment': ({'discard_card': 3,
+                   'drawn_card': 3,
+                   'player_cards': [[12, -1, 'X', 0],
+                                    [3, 0, 'X', 0],
+                                    [3, 1, 'X', 'X']]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_discard', 'replace_card', (0, 2)],
+  'environment': ({'discard_card': -1,
+                   'drawn_card': -1,
+                   'player_cards': [[12, -1, 'X', 0],
+                                    [3, 3, 'X', 0],
+                                    [3, 1, 'X', 'X']]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_deck', 'reveal_card', (2, 0)],
+  'environment': ({'discard_card': 10,
+                   'drawn_card': 4,
+                   'player_cards': [[12, -1, -1, 0],
+                                    [3, 3, 'X', 0],
+                                    [3, 1, 'X', 'X']]},),
+  'type': 'reveal_from_deck_move'},
+ {'actions': ['from_deck', 'replace_card', (0, 3)],
+  'environment': ({'discard_card': 9,
+                   'drawn_card': 0,
+                   'player_cards': [[12, -1, -1, 0],
+                                    [3, 3, 'X', 0],
+                                    [3, 1, 'X', 'X']]},),
+  'type': 'replace_from_deck_move'},
+ {'actions': ['from_deck', 'reveal_card', (2, 2)],
+  'environment': ({'discard_card': 0,
+                   'drawn_card': 8,
+                   'player_cards': [[12, -1, -1, 0],
+                                    [3, 3, 'X', 0],
+                                    [3, 1, 'X', 'X']]},),
+  'type': 'reveal_from_deck_move'},
+ {'actions': ['from_discard', 'replace_card', (2, 3)],
+  'environment': ({'discard_card': 8,
+                   'drawn_card': 8,
+                   'player_cards': [[12, -1, -1, 0],
+                                    [3, 3, 'X', 0],
+                                    [3, 1, 11, 'X']]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_deck', 'reveal_card', (0, 0)],
+  'environment': ({'discard_card': 9,
+                   'drawn_card': -1,
+                   'player_cards': [[12, -1, -1, 0],
+                                    [3, 3, 'X', 0],
+                                    [3, 1, 11, 8]]},),
+  'type': 'reveal_from_deck_move'},
+ {'actions': ['from_discard', 'replace_card', (1, 2)],
+  'environment': ({'discard_card': 2,
+                   'drawn_card': 2,
+                   'player_cards': [[12, -1, -1, 0],
+                                    [3, 3, 'X', 0],
+                                    [3, 1, 11, 8]]},),
+  'type': 'replace_from_discard_move'}]
+[{'actions': ['reveal_card', (2, 2)],
+  'environment': ({'discard_card': None,
+                   'drawn_card': None,
+                   'player_cards': [['X', 'X', 'X', 'X'],
+                                    ['X', 'X', 'X', 'X'],
+                                    ['X', 'X', 'X', 'X']]},),
+  'type': 'first_card_reveal_move'},
+ {'actions': ['reveal_card', (1, 3)],
+  'environment': ({'discard_card': None,
+                   'drawn_card': None,
+                   'player_cards': [['X', 'X', 'X', 'X'],
+                                    ['X', 'X', 'X', 'X'],
+                                    ['X', 'X', 3, 'X']]},),
+  'type': 'second_card_reveal_move'},
+ {'actions': ['from_deck', 'replace_card', (0, 3)],
+  'environment': ({'discard_card': 10,
+                   'drawn_card': 0,
+                   'player_cards': [['X', 'X', 'X', 'X'],
+                                    ['X', 'X', 'X', 0],
+                                    ['X', 'X', 3, 'X']]},),
+  'type': 'replace_from_deck_move'},
+ {'actions': ['from_discard', 'replace_card', (1, 0)],
+  'environment': ({'discard_card': 12,
+                   'drawn_card': 12,
+                   'player_cards': [['X', 'X', 'X', 0],
+                                    ['X', 'X', 'X', 0],
+                                    ['X', 'X', 3, 'X']]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_discard', 'replace_card', (1, 1)],
+  'environment': ({'discard_card': 10,
+                   'drawn_card': 10,
+                   'player_cards': [['X', 'X', 'X', 0],
+                                    [12, 'X', 'X', 0],
+                                    ['X', 'X', 3, 'X']]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_discard', 'replace_card', (1, 0)],
+  'environment': ({'discard_card': 9,
+                   'drawn_card': 9,
+                   'player_cards': [['X', 'X', 'X', 0],
+                                    [12, 10, 'X', 0],
+                                    ['X', 'X', 3, 'X']]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_deck', 'reveal_card', (1, 2)],
+  'environment': ({'discard_card': -2,
+                   'drawn_card': -1,
+                   'player_cards': [['X', 'X', 'X', 0],
+                                    [9, 10, 'X', 0],
+                                    ['X', 'X', 3, 'X']]},),
+  'type': 'reveal_from_deck_move'},
+ {'actions': ['from_discard', 'replace_card', (2, 3)],
+  'environment': ({'discard_card': 9,
+                   'drawn_card': 9,
+                   'player_cards': [['X', 'X', 'X', 0],
+                                    [9, 10, 2, 0],
+                                    ['X', 'X', 3, 'X']]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_deck', 'reveal_card', (0, 2)],
+  'environment': ({'discard_card': 1,
+                   'drawn_card': 10,
+                   'player_cards': [['X', 'X', 'X', 0],
+                                    [9, 10, 2, 0],
+                                    ['X', 'X', 3, 9]]},),
+  'type': 'reveal_from_deck_move'},
+ {'actions': ['from_discard', 'replace_card', (0, 3)],
+  'environment': ({'discard_card': 2,
+                   'drawn_card': 2,
+                   'player_cards': [['X', 'X', 10, 0],
+                                    [9, 10, 2, 0],
+                                    ['X', 'X', 3, 9]]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_deck', 'reveal_card', (0, 3)],
+  'environment': ({'discard_card': 12,
+                   'drawn_card': 7,
+                   'player_cards': [['X', 'X', 10, 2],
+                                    [9, 10, 2, 0],
+                                    ['X', 'X', 3, 9]]},),
+  'type': 'reveal_from_deck_move'},
+ {'actions': ['from_discard', 'replace_card', (0, 3)],
+  'environment': ({'discard_card': 6,
+                   'drawn_card': 6,
+                   'player_cards': [['X', 'X', 10, 2],
+                                    [9, 10, 2, 0],
+                                    ['X', 'X', 3, 9]]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_deck', 'replace_card', (2, 2)],
+  'environment': ({'discard_card': 11,
+                   'drawn_card': 8,
+                   'player_cards': [['X', 'X', 10, 6],
+                                    [9, 10, 2, 0],
+                                    ['X', 'X', 3, 9]]},),
+  'type': 'replace_from_deck_move'},
+ {'actions': ['from_discard', 'replace_card', (2, 0)],
+  'environment': ({'discard_card': 0,
+                   'drawn_card': 0,
+                   'player_cards': [['X', 'X', 10, 6],
+                                    [9, 10, 2, 0],
+                                    ['X', 'X', 8, 9]]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_discard', 'replace_card', (0, 2)],
+  'environment': ({'discard_card': 11,
+                   'drawn_card': 11,
+                   'player_cards': [['X', 'X', 10, 6],
+                                    [9, 10, 2, 0],
+                                    [0, 'X', 8, 9]]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_discard', 'replace_card', (2, 3)],
+  'environment': ({'discard_card': 4,
+                   'drawn_card': 4,
+                   'player_cards': [['X', 'X', 11, 6],
+                                    [9, 10, 2, 0],
+                                    [0, 'X', 8, 9]]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_deck', 'replace_card', (1, 3)],
+  'environment': ({'discard_card': 0,
+                   'drawn_card': 9,
+                   'player_cards': [['X', 'X', 11, 6],
+                                    [9, 10, 2, 0],
+                                    [0, 'X', 8, 4]]},),
+  'type': 'replace_from_deck_move'},
+ {'actions': ['from_discard', 'replace_card', (2, 2)],
+  'environment': ({'discard_card': 8,
+                   'drawn_card': 8,
+                   'player_cards': [['X', 'X', 11, 6],
+                                    [9, 10, 2, 9],
+                                    [0, 'X', 8, 4]]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_deck', 'replace_card', (1, 3)],
+  'environment': ({'discard_card': -1,
+                   'drawn_card': 1,
+                   'player_cards': [['X', 'X', 11, 6],
+                                    [9, 10, 2, 9],
+                                    [0, 'X', 8, 4]]},),
+  'type': 'replace_from_deck_move'},
+ {'actions': ['from_discard', 'replace_card', (0, 0)],
+  'environment': ({'discard_card': -1,
+                   'drawn_card': -1,
+                   'player_cards': [['X', 'X', 11, 6],
+                                    [9, 10, 2, 1],
+                                    [0, 'X', 8, 4]]},),
+  'type': 'replace_from_discard_move'},
+ {'actions': ['from_discard', 'replace_card', (1, 2)],
+  'environment': ({'discard_card': 11,
+                   'drawn_card': 11,
+                   'player_cards': [[-1, 'X', 11, 6],
+                                    [9, 10, 2, 1],
+                                    [0, 'X', 8, 4]]},),
+  'type': 'replace_from_discard_move'}]
