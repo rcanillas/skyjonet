@@ -1,5 +1,7 @@
 from typing import List, Dict, Union
 from pprint import pprint
+
+import json
 import random
 import copy
 
@@ -67,25 +69,23 @@ class Player:
         self.player_name: str = player_name
         self.card_board = []
         self.last_turn = False
-        self.draw_action_rewards = {"from_deck": 0.5, "from_discard": 0.5}
-        self.draw_action = None
-        self.discard_or_reveal_action_rewards = {"discard": 0.5, "reveal": 0.5}
-        self.discard_or_reveal_action = None
-        self.replace_card_action_rewards = {}
-        self.replace_card_action = None
-        self.reveal_card_action_rewards = {}
-        self.reveal_card_action = None
+        self.draw_action_proba = {}
+        self.replace_or_reveal_action_proba = {}
+        self.replace_card_action_proba = {}
+        self.reveal_card_action_proba = {}
         self.move_history = []
+        self.has_won = False
 
     def draw_board(self, card_deck: CardDeck) -> None:
+        self.card_board = []
         for row in range(0, COLUMN_LENGTH):
             col_cards = []
             for col in range(0, ROW_LENGTH):
                 col_cards.append(card_deck.draw_card())
-                self.replace_card_action_rewards[(row, col)] = 1 / (
+                self.replace_card_action_proba[(row, col)] = 1 / (
                     ROW_LENGTH * COLUMN_LENGTH
                 )
-                self.reveal_card_action_rewards[(row, col)] = 1 / (
+                self.reveal_card_action_proba[(row, col)] = 1 / (
                     ROW_LENGTH * COLUMN_LENGTH
                 )
             self.card_board.append(col_cards)
@@ -176,68 +176,109 @@ class Player:
             for col in self.card_board
         ]
 
-    def get_environment(self, drawn_card: Card, card_deck: CardDeck) -> None:
-        return (
+    def get_environment(self, drawn_card: Card, card_deck: CardDeck) -> str:
+        return json.dumps(
             {
                 "drawn_card": copy.copy(drawn_card.value) if drawn_card else None,
                 "discard_card": (
                     copy.copy(card_deck.discard[-1].value) if card_deck else None
                 ),
                 "player_cards": self.get_player_cards(),
+                "player_score": self.compute_current_score(),
             },
         )
 
-    def select_draw_action(self) -> str:
-        return random.choice(["from_discard", "from_deck"])
+    def select_draw_action(self, environement) -> str:
+        if environement not in (self.draw_action_proba.keys()):
+            self.draw_action_proba[environement] = [0.50, 0.50]
+        return random.choices(
+            ["from_deck", "from_discard"], self.draw_action_proba[environement]
+        )[0]
 
-    def select_card_to_replace(self) -> tuple[int, int]:
-        return random.randint(0, COLUMN_LENGTH - 1), random.randint(
-            0, len(player.card_board[0]) - 1
+    def select_card_to_replace(self, environment) -> tuple[int, int]:
+        population = [
+            (x, y)
+            for x in range(0, COLUMN_LENGTH)
+            for y in range(0, len(self.card_board[0]))
+        ]
+        if environment not in (self.replace_card_action_proba.keys()):
+            self.replace_card_action_proba[environment] = [
+                1 / (COLUMN_LENGTH * len(self.card_board[0]))
+                for _ in range(0, COLUMN_LENGTH * len(self.card_board[0]))
+            ]
+        card_position = random.choices(
+            population, self.replace_card_action_proba[environment]
         )
+        return card_position[0]
 
-    def select_replace_or_reveal_action(self) -> str:
-        return random.choice(["replace_card", "reveal_card"])
+    def select_replace_or_reveal_action(self, environment) -> str:
+        if environment not in self.replace_or_reveal_action_proba:
+            self.replace_or_reveal_action_proba[environment] = [0.50, 0.50]
+        return random.choices(
+            ["replace_card", "reveal_card"],
+            self.replace_or_reveal_action_proba[environment],
+        )[0]
 
-    def select_card_to_reveal(self) -> tuple[int, int]:
-        return random.randint(0, COLUMN_LENGTH - 1), random.randint(
-            0, len(player.card_board[0]) - 1
+    def select_card_to_reveal(self, environment) -> tuple[int, int]:
+        population = [
+            (x, y)
+            for x in range(0, COLUMN_LENGTH)
+            for y in range(0, len(self.card_board[0]))
+        ]
+        if environment not in (self.reveal_card_action_proba.keys()):
+            self.reveal_card_action_proba[environment] = [
+                1 / (COLUMN_LENGTH * len(self.card_board[0]))
+                for _ in range(0, COLUMN_LENGTH * len(self.card_board[0]))
+            ]
+        card_position = random.choices(
+            population, self.reveal_card_action_proba[environment]
         )
+        return card_position[0]
 
     def init_game(self) -> None:
         # Player reveals two cards from its board at the beginning of the game
-        first_card_revealed = self.select_card_to_reveal()
+        environment1 = self.get_environment(None, None)
+        first_card_revealed = self.select_card_to_reveal(environment1)
         self.move_history.append(
             {
                 "type": "first_card_reveal_move",
-                "environment": self.get_environment(None, None),
+                "environment": environment1,
                 "actions": ["reveal_card", first_card_revealed],
             }
         )
         self.reveal_card(first_card_revealed[0], first_card_revealed[1])
-        second_card_revealed = self.select_card_to_reveal()
+        # Revealing the second card
+        environment2 = self.get_environment(None, None)
+        second_card_revealed = self.select_card_to_reveal(environment2)
         self.move_history.append(
             {
                 "type": "second_card_reveal_move",
-                "environment": self.get_environment(None, None),
+                "environment": environment2,
                 "actions": ["reveal_card", second_card_revealed],
             }
         )
         self.reveal_card(second_card_revealed[0], second_card_revealed[1])
-        pprint(self.move_history)
+        # pprint(self.move_history)
         return
+
+    def reset_board(self, card_deck: CardDeck) -> None:
+        for row in self.card_board:
+            for card in row:
+                card_deck.discard_card(card)
+        self.last_turn = False
 
     def play_turn(self, card_deck: CardDeck) -> None:
         # Player either draw from draw pile or take card from discard pile
-        draw_action = self.select_draw_action()
+        environement = self.get_environment(None, card_deck)
+        draw_action = self.select_draw_action(environement)
         if draw_action == "from_discard":
             # If the card is drawn from the discard pile, Player has to exchange the card with one on the board.
-            card_to_replace = self.select_card_to_replace()
+            environement = self.get_environment(card_deck.discard[-1], card_deck)
+            card_to_replace = self.select_card_to_replace(environement)
             self.move_history.append(
                 {
                     "type": "replace_from_discard_move",
-                    "environment": self.get_environment(
-                        card_deck.discard[-1], card_deck
-                    ),
+                    "environment": environement,
                     "actions": [draw_action, "replace_card", card_to_replace],
                 }
             )
@@ -248,13 +289,16 @@ class Player:
         elif draw_action == "from_deck":
             # If the card is drawn from the deck pile, Player can exchange the card with one on the board or discard the card and reveal a card on the board.
             drawn_card = card_deck.draw_card(is_visible=True)
-            replace_or_reveal_action = self.select_replace_or_reveal_action()
+            environement = self.get_environment(drawn_card, card_deck)
+            replace_or_reveal_action = self.select_replace_or_reveal_action(
+                environement
+            )
             if replace_or_reveal_action == "replace_card":
-                card_to_replace = self.select_card_to_replace()
+                card_to_replace = self.select_card_to_replace(environement)
                 self.move_history.append(
                     {
                         "type": "replace_from_deck_move",
-                        "environment": self.get_environment(drawn_card, card_deck),
+                        "environment": environement,
                         "actions": [
                             draw_action,
                             replace_or_reveal_action,
@@ -267,11 +311,11 @@ class Player:
                 )
 
             elif replace_or_reveal_action == "reveal_card":
-                card_to_reveal = self.select_card_to_reveal()
+                card_to_reveal = self.select_card_to_reveal(environement)
                 self.move_history.append(
                     {
                         "type": "reveal_from_deck_move",
-                        "environment": self.get_environment(drawn_card, card_deck),
+                        "environment": environement,
                         "actions": [
                             draw_action,
                             replace_or_reveal_action,
@@ -281,26 +325,27 @@ class Player:
                 )
                 card_deck.discard_card(drawn_card)
                 replaced_cards = self.reveal_card(card_to_reveal[0], card_to_reveal[1])
-        # print(replaced_cards)
         for replaced_card in replaced_cards:
-            # print(replaced_card)
             card_deck.discard_card(replaced_card)
-        # pprint(self.move_history)
+        """
+        pprint("draw card proba")
+        pprint(self.draw_action_proba)
+        pprint("replace card proba")
+        pprint(self.replace_card_action_proba)
+        pprint("drop card proba")
+        pprint(self.replace_or_reveal_action_proba)
+        pprint("reveal card proba")
+        pprint(self.reveal_card_action_proba)
+        """
+        return
+
+    def update_rewards(self) -> None:
         return
 
 
-class SkyjoGame:
-    def __init__(self) -> None:
-        self.players: List[Player] = []
-        self.players_score: List[Dict[str, int]] = []
-
-
-if __name__ == "__main__":
-    print("Starting game")
-    card_deck = CardDeck()
+def play_game(card_deck: CardDeck, player1: Player, player2: Player, i: int) -> None:
+    print("Starting game", i)
     card_deck.reset_deck()
-    player1 = Player("test_bot_1")
-    player2 = Player("test_bot_2")
     player_list = [player1, player2]
     for player in player_list:
         player.draw_board(card_deck)
@@ -339,8 +384,18 @@ if __name__ == "__main__":
         if player_final_score < min_score:
             min_score = player_final_score
             best_player = player
+            player.has_won = True
+        player.reset_board(card_deck)
     print(
         f"The winner of the round is {best_player.player_name} with a score of {min_score} !"
     )
-    pprint(len(player1.move_history))
-    pprint(len(player2.move_history))
+    # pprint(player1.move_history)
+    # pprint(len(player2.move_history))
+
+
+if __name__ == "__main__":
+    card_deck = CardDeck()
+    player1 = Player("test_bot_1")
+    player2 = Player("test_bot_2")
+    for i in range(150):
+        play_game(card_deck, player1, player2, i)

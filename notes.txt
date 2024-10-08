@@ -1,0 +1,9 @@
+1) J'ai le choix entre la pioche et la défausse. Sachant l'état actuel du jeu, Est-ce que c'est pertinent de prendre de la défausse ou bien de la pioche ? 
+    2.1) j'ai pris une carte de la défausse, Sachant l'état actuel du jeu,  est-ce que c'est pertinent de remplacer une carte connue ou bien       inconnue ? 
+        2.1.1) J'ai choisi de remplacer une carte connue. Sachant l'état actuel du jeu, quelle carte connue est-il pertinent de remplacer ? 
+        2.1.2) J'ai choisi de remplacer une carte inconnue. Sachant l'état actuel du jeu,  quelle carte inconnue est-il pertinent de remplacer ?
+    2.2) j'ai pris une carte de la pioche. Sachant l'état actuel du jeu,  est-ce que c'est pertinent de remplacer une carte ou bien défausser la carte et révéler une carte inconnue ? 
+        2.2.1) J'ai choisi de défausser la carte. Sachant l'état actuel du jeu,  quelle carte inconnue est-il pertinent de révéler ?
+        2.2.2) J'ai choisi de remplacer une carte. Sachant l'état actuel du jeu,  est-il pertinent de remplacer une carte connue ou inconnue ? 
+            2.2.2.1) J'ai choisi de remplacer une carte connue. Sachant l'état actuel du jeu,  quelle carte connue est-il pertinent de remplacer ?
+           2.2.2.2) J'ai choisi de remplacer une carte inconnue. Sachant l'état actuel du jeu,  quelle carte inconnue est il pertinent de remplacer ?
