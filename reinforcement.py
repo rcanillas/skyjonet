@@ -93,16 +93,6 @@ class Agent:
     def update_state_history(self, state, reward):
         self.state_history.append((state, reward))
 
-    def learn(self):
-        target = 0  # we know the "ideal" reward
-        a = self.alpha
-
-        for state, reward in reversed(self.state_history):
-            self.G[state] = self.G[state] + a * (target - self.G[state])
-
-        self.state_history = []  # reset the state_history
-        self.random_factor = -10e-5  # decrease random_factor
-
     def choose_action(self, state, allowed_moves):
         next_move = None
         n = np.random.random()
