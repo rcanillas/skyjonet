@@ -2,7 +2,7 @@ from typing import List, Dict, Union
 from pprint import pprint
 from tqdm import tqdm
 
-
+import os
 import json
 import random
 import copy
@@ -83,14 +83,51 @@ class Player:
         self.player_name: str = player_name
         self.card_board = []
         self.last_turn = False
-        self.q_table_draw_action = {}
-        self.q_table_replace_or_reveal_action = {}
+        self.q_draw_action = {}
+        self.q_replace_or_reveal_action = {}
         self.q_replace_card_action = {}
         self.q_reveal_card_action = {}
         self.move_history = []
         self.has_won = False
         self.previous_score = None
         self.exploration_prob = 0.5
+        self.output_folder = f"{player_name}_data/"
+        if not os.path.exists(self.output_folder):
+            os.makedirs(self.output_folder)
+        else:
+            with open(
+                f"{self.output_folder}draw_action_table.json", "r"
+            ) as q_table_draw_action_file:
+                old_q_table_draw_action = json.load(q_table_draw_action_file)
+                self.q_draw_action = self.q_draw_action | old_q_table_draw_action
+            with open(
+                f"{self.output_folder}replace_or_reveal_action_table.json", "r"
+            ) as q_table_replace_or_reveal_action_file:
+                old_q_table_replace_or_reveal_action = json.load(
+                    q_table_replace_or_reveal_action_file
+                )
+                self.q_replace_or_reveal_action = (
+                    self.q_replace_or_reveal_action
+                    | old_q_table_replace_or_reveal_action
+                )
+            with open(
+                f"{self.output_folder}replace_card_action_table.json", "r"
+            ) as q_table_replace_card_action_file:
+                old_q_table_replace_card_action = json.load(
+                    q_table_replace_card_action_file
+                )
+                self.q_table_replace_card_action = (
+                    self.q_replace_card_action | old_q_table_replace_card_action
+                )
+            with open(
+                f"{self.output_folder}reveal_card_action_table.json", "r"
+            ) as q_table_reveal_card_action_file:
+                old_q_table_reveal_card_action = json.load(
+                    q_table_reveal_card_action_file
+                )
+                self.q_table_reveal_card_action = (
+                    self.q_reveal_card_action | old_q_table_reveal_card_action
+                )
 
     def draw_board(self, card_deck: CardDeck) -> None:
         self.card_board = []
@@ -215,8 +252,28 @@ class Player:
                 env = None
             else:
                 env = self.get_environment(card_deck.discard[-1], None)
-                if env not in self.q_table_draw_action:
-                    self.q_table_draw_action[env] = 0
+                if env not in self.q_draw_action:
+                    self.q_draw_action[env] = 0
+            return next_move, env
+
+        def select_best_move(
+            discarded_card: Card, allowed_moves: List[str]
+        ) -> tuple[str, str]:
+            card_values = []
+            for row in self.card_board:
+                for c in row:
+                    card_values.append(c.value)
+            if discarded_card.value < min(card_values):
+                next_move = "from_discard"
+            else:
+                next_move = "from_deck"
+            next_move = random.choice(allowed_moves)
+            if next_move == "from_deck":
+                env = None
+            else:
+                env = self.get_environment(card_deck.discard[-1], None)
+                if env not in self.q_draw_action:
+                    self.q_draw_action[env] = 0
             return next_move, env
 
         next_move_list = []
@@ -236,10 +293,10 @@ class Player:
                 next_move_list.append(("from_deck", possible_environment_from_deck))
             for move, possible_env in next_move_list:
                 try:
-                    reward = self.q_table_draw_action[possible_env]
+                    reward = self.q_draw_action[possible_env]
                 except KeyError:
-                    self.q_table_draw_action[possible_env] = 0
-                    reward = self.q_table_draw_action[possible_env]
+                    self.q_draw_action[possible_env] = 0
+                    reward = self.q_draw_action[possible_env]
                 move_q_probabilized = (
                     reward
                     if move == "from_discard"
@@ -250,7 +307,7 @@ class Player:
                     env = possible_env
                     maxG = move_q_probabilized
             if maxG == 0:
-                next_move, env = select_random_move(allowed_moves)
+                next_move, env = select_best_move(card_deck.discard[-1], allowed_moves)
 
         else:
             next_move, env = select_random_move(allowed_moves)
@@ -261,8 +318,8 @@ class Player:
                     env = None
                 else:
                     env = self.get_environment(card_deck.discard[-1], None)
-                    if env not in self.q_table_draw_action:
-                        self.q_table_draw_action[env] = 0
+                    if env not in self.q_draw_action:
+                        self.q_draw_action[env] = 0
                 return next_move, env
 
         return next_move, env
@@ -278,8 +335,8 @@ class Player:
                 env = self.get_environment(drawn_card, None)
             else:
                 env = self.get_environment(None, drawn_card)
-            if env not in self.q_table_replace_or_reveal_action:
-                self.q_table_replace_or_reveal_action[env] = 0
+            if env not in self.q_replace_or_reveal_action:
+                self.q_replace_or_reveal_action[env] = 0
             return next_move, env
 
         n = np.random.random()
@@ -292,14 +349,14 @@ class Player:
             next_move_list.append(("reveal_card", possible_environment_from_reveal))
             for move, possible_env in next_move_list:
                 try:
-                    reward = self.q_table_replace_or_reveal_action[possible_env]
+                    reward = self.q_replace_or_reveal_action[possible_env]
                 except KeyError:
-                    self.q_table_replace_or_reveal_action[possible_env] = 0
-                    reward = self.q_table_replace_or_reveal_action[possible_env]
+                    self.q_replace_or_reveal_action[possible_env] = 0
+                    reward = self.q_replace_or_reveal_action[possible_env]
                 if reward > maxG:
                     next_move = move
                     env = possible_env
-                    maxG = self.q_table_replace_or_reveal_action[env]
+                    maxG = self.q_replace_or_reveal_action[env]
             if maxG == 0:
                 next_move, env = select_random_move(allowed_moves)
         else:
@@ -325,6 +382,56 @@ class Player:
             population: List[tuple[int, int]]
         ) -> tuple[tuple[int, int], str]:
             card_position = random.choice(population)
+            temp_board = copy.deepcopy(self.card_board)
+            discarded_card = temp_board[card_position[0]][card_position[1]]
+            temp_board[card_position[0]][card_position[1]] = drawn_card
+            env = self.get_environment(None, discarded_card, temp_board)
+            if env not in self.q_replace_card_action:
+                self.q_replace_card_action[env] = 0
+            return card_position, env
+
+        def replace_best_card(
+            drawn_card: Card, population: List[tuple[int, int]]
+        ) -> tuple[tuple[int, int], str]:
+            card_position = random.choice(population)
+            possible_moves = []
+            remove_value = -3
+            for i, row in enumerate(self.card_board):
+                for j, card in enumerate(row):
+                    if card.is_visible:
+                        if (card.value > drawn_card.value) & (
+                            card.value > remove_value
+                        ):
+                            card_to_replace = (i, j)
+                            remove_value = card.value
+                            expected_gain = card.value - drawn_card.value
+                            possible_moves.append((card_to_replace, expected_gain))
+                    else:
+                        if drawn_card.value not in [-2, -1, 0]:
+                            for k in range(len(self.card_board[0])):
+                                card1 = self.card_board[0][k]
+                                card2 = self.card_board[1][k]
+                                card3 = self.card_board[2][k]
+                                expected_gain = drawn_card.value * 3
+                                if (drawn_card.value == card2.value == card3.value) & (
+                                    card2.is_visible & card3.is_visible
+                                ):
+                                    possible_moves.append(((0, k), expected_gain))
+                                elif (
+                                    drawn_card.value == card1.value == card3.value
+                                ) & (card1.is_visible & card3.is_visible):
+                                    possible_moves.append(((1, k), expected_gain))
+                                elif (
+                                    drawn_card.value == card1.value == card2.value
+                                ) & (card1.is_visible & card2.is_visible):
+                                    possible_moves.append(((2, k), expected_gain))
+            best_expected_gain = 0
+            # pprint(possible_moves)
+            for move_card_position, move_expected_gain in possible_moves:
+                if move_expected_gain > best_expected_gain:
+                    card_position = move_card_position
+                    best_expected_gain = move_expected_gain
+
             temp_board = copy.deepcopy(self.card_board)
             discarded_card = temp_board[card_position[0]][card_position[1]]
             temp_board[card_position[0]][card_position[1]] = drawn_card
@@ -401,8 +508,8 @@ class Player:
                     env = possible_env
                     maxG = reward
             if maxG == 0:
-                card_position, env = replace_random_card(
-                    hidden_population + visible_population
+                card_position, env = replace_best_card(
+                    drawn_card, hidden_population + visible_population
                 )
         else:
             card_position, env = replace_random_card(
@@ -422,6 +529,31 @@ class Player:
             population: List[tuple[int, int]]
         ) -> tuple[tuple[int, int], str]:
             card_position = random.choice(population)
+            temp_board = copy.deepcopy(self.card_board)
+            temp_board[card_position[0]][card_position[1]].is_visible = True
+            env = self.get_environment(None, None, temp_board)
+            if env not in self.q_reveal_card_action:
+                self.q_reveal_card_action[env] = 0
+            return card_position, env
+
+        def reveal_missing_card(
+            population: List[tuple[int, int]]
+        ) -> tuple[tuple[int, int], str]:
+            possible_card_list = []
+            for i in range(len(self.card_board[0])):
+                card1 = self.card_board[0][i]
+                card2 = self.card_board[1][i]
+                card3 = self.card_board[2][i]
+                if (not card1.is_visible) & card2.is_visible & card3.is_visible:
+                    possible_card_list.append((0, i))
+                elif card1.is_visible & (not card2.is_visible) & card3.is_visible:
+                    possible_card_list.append((1, i))
+                elif card1.is_visible & card2.is_visible & (not card3.is_visible):
+                    possible_card_list.append((2, i))
+            if possible_card_list:
+                card_position = random.choice(possible_card_list)
+            else:
+                card_position = random.choice(population)
             temp_board = copy.deepcopy(self.card_board)
             temp_board[card_position[0]][card_position[1]].is_visible = True
             env = self.get_environment(None, None, temp_board)
@@ -461,7 +593,7 @@ class Player:
                     env = possible_env
                     maxG = reward
             if reward == 0:
-                card_position, env = reveal_random_card(population)
+                card_position, env = reveal_missing_card(population)
         else:
             card_position, env = reveal_random_card(population)
 
@@ -523,8 +655,8 @@ class Player:
             # If the card is drawn from the deck pile, Player can exchange the card with one on the board or discard the card and reveal a card on the board.
             drawn_card = card_deck.draw_card(is_visible=True)
             actions.append((draw_action, self.get_environment(drawn_card)))
-            if self.get_environment(drawn_card) not in self.q_table_draw_action:
-                self.q_table_draw_action[self.get_environment(drawn_card)] = 0
+            if self.get_environment(drawn_card) not in self.q_draw_action:
+                self.q_draw_action[self.get_environment(drawn_card)] = 0
             replace_or_reveal_action, environment = (
                 self.select_replace_or_reveal_action(drawn_card)
             )
@@ -569,15 +701,15 @@ class Player:
                 if action == "from_discard" or action == "from_deck":
                     # pprint(env)
                     # pprint(self.q_table_draw_action.keys())
-                    self.q_table_draw_action[env] = self.q_table_draw_action[
-                        env
-                    ] + alpha * (target - self.q_table_draw_action[env])
+                    self.q_draw_action[env] = self.q_draw_action[env] + alpha * (
+                        target - self.q_draw_action[env]
+                    )
                 elif action == "replace_card" or action == "reveal_card":
                     # pprint(env)
                     # pprint(self.q_table_replace_or_reveal_action.keys())
-                    self.q_table_replace_or_reveal_action[env] = (
-                        self.q_table_replace_or_reveal_action[env]
-                        + alpha * (target - self.q_table_replace_or_reveal_action[env])
+                    self.q_replace_or_reveal_action[env] = (
+                        self.q_replace_or_reveal_action[env]
+                        + alpha * (target - self.q_replace_or_reveal_action[env])
                     )
                 else:
                     if (
@@ -596,6 +728,28 @@ class Player:
                             env
                         ] + alpha * (target - self.q_reveal_card_action[env])
             # print("OK")
+        with open(
+            f"{self.output_folder}draw_action_table.json", "w"
+        ) as q_table_draw_action_file:
+            json.dump(
+                self.q_draw_action,
+                q_table_draw_action_file,
+            )
+        with open(
+            f"{self.output_folder}replace_or_reveal_action_table.json", "w"
+        ) as q_table_replace_or_reveal_action_file:
+            json.dump(
+                self.q_replace_or_reveal_action,
+                q_table_replace_or_reveal_action_file,
+            )
+        with open(
+            f"{self.output_folder}replace_card_action_table.json", "w"
+        ) as q_table_replace_card_action_file:
+            json.dump(self.q_replace_card_action, q_table_replace_card_action_file)
+        with open(
+            f"{self.output_folder}reveal_card_action_table.json", "w"
+        ) as q_table_reveal_card_action_file:
+            json.dump(self.q_reveal_card_action, q_table_reveal_card_action_file)
 
         self.exploration_prob -= 10e-5
         self.move_history = []
@@ -659,10 +813,10 @@ if __name__ == "__main__":
     player1 = Player("test_bot_1")
     player2 = Player("test_bot_2")
     player_scores = []
-    for i in tqdm(range(100)):
+    for i in tqdm(range(2000)):
         play_game(card_deck, player1, player2, i)
         player1.update_q_tables()
-        # player2.update_q_tables()
+        player2.update_q_tables()
         player_scores.append(
             {
                 "game": i,
@@ -678,7 +832,7 @@ if __name__ == "__main__":
             },
         )
     scores_df = pd.DataFrame(player_scores)
-    fig = plt.figure(figsize=(30, 7))
+    fig = plt.figure(figsize=(50, 7))
     ax = sns.lineplot(data=scores_df, x="game", y="score", hue="player", marker="o")
     ax1 = plt.axhline(
         scores_df.loc[scores_df["player"] == player1.player_name]["score"].mean(),
