@@ -324,13 +324,50 @@ class Player:
 
         return next_move, env
 
-    def select_replace_or_reveal_action(self, drawn_card) -> str:
+    def select_replace_or_reveal_action(self, drawn_card: Card) -> tuple[str, str]:
         next_move = None
         next_move_list = []
         allowed_moves = ["replace_card", "reveal_card"]
 
         def select_random_move(allowed_moves: List[str]) -> tuple[str, str]:
             next_move = random.choice(allowed_moves)
+            if next_move == "replace_card":
+                env = self.get_environment(drawn_card, None)
+            else:
+                env = self.get_environment(None, drawn_card)
+            if env not in self.q_replace_or_reveal_action:
+                self.q_replace_or_reveal_action[env] = 0
+            return next_move, env
+
+        def select_best_move(
+            self, drawn_card: Card, allowed_moves: List[str]
+        ) -> tuple[str, str]:
+            next_move = random.choice(allowed_moves)
+            cards_values = []
+            for row in self.card_board:
+                for card in row:
+                    if card.is_visible:
+                        cards_values.append(card.value)
+            if drawn_card.value < min(cards_values):
+                next_move = "replace_card"
+            else:
+                if drawn_card.value not in [-2, -1, 0]:
+                    for k in range(len(self.card_board[0])):
+                        card1 = self.card_board[0][k]
+                        card2 = self.card_board[1][k]
+                        card3 = self.card_board[2][k]
+                        if (drawn_card.value == card2.value == card3.value) & (
+                            card2.is_visible & card3.is_visible
+                        ):
+                            next_move = "replace_card"
+                        elif (drawn_card.value == card1.value == card3.value) & (
+                            card1.is_visible & card3.is_visible
+                        ):
+                            next_move = "replace_card"
+                        elif (drawn_card.value == card1.value == card2.value) & (
+                            card1.is_visible & card2.is_visible
+                        ):
+                            next_move = "replace_card"
             if next_move == "replace_card":
                 env = self.get_environment(drawn_card, None)
             else:
@@ -755,22 +792,17 @@ class Player:
         self.move_history = []
 
 
-def play_game(card_deck: CardDeck, player1: Player, player2: Player, i: int) -> None:
+def play_game(card_deck: CardDeck, player_list: List[Player], i: int) -> None:
     # print("Starting game", i)
     card_deck.reset_deck()
-    player_list = [player1, player2]
     for player in player_list:
         player.draw_board(card_deck)
         player.init_game()
         # player.show_board()
     card_deck.init_round()
     i = 1
-    # TODO: better ordering function
-    player_ordered_turn = (
-        [player1, player2]
-        if player1.compute_visible_score(player1.card_board)
-        > player2.compute_visible_score(player2.card_board)
-        else [player2, player1]
+    player_ordered_turn = sorted(
+        player_list, key=lambda p: p.compute_visible_score(p.card_board)
     )
     round_over = False
     while not round_over:
@@ -810,38 +842,34 @@ def play_game(card_deck: CardDeck, player1: Player, player2: Player, i: int) -> 
 
 if __name__ == "__main__":
     card_deck = CardDeck()
-    player1 = Player("test_bot_1")
-    player2 = Player("test_bot_2")
+    player1 = Player("Random Tom")
+    player2 = Player("Smarty Lucy")
+    player3 = Player("Average Joe")
+    player1.exploration_prob = 0.9
+    player2.exploration_prob = 0.1
+    player3.exploration_prob = 0.5
     player_scores = []
+    player_list = [player1, player2, player3]
     for i in tqdm(range(2000)):
-        play_game(card_deck, player1, player2, i)
-        player1.update_q_tables()
-        player2.update_q_tables()
-        player_scores.append(
-            {
-                "game": i,
-                "score": player1.compute_final_score(),
-                "player": player1.player_name,
-            }
-        )
-        player_scores.append(
-            {
-                "game": i,
-                "score": player2.compute_final_score(),
-                "player": player2.player_name,
-            },
-        )
+        play_game(card_deck, player_list, i)
+        for player in player_list:
+            player.update_q_tables()
+            player_scores.append(
+                {
+                    "game": i,
+                    "score": player.compute_final_score(),
+                    "player": player.player_name,
+                }
+            )
     scores_df = pd.DataFrame(player_scores)
     fig = plt.figure(figsize=(50, 7))
     ax = sns.lineplot(data=scores_df, x="game", y="score", hue="player", marker="o")
-    ax1 = plt.axhline(
-        scores_df.loc[scores_df["player"] == player1.player_name]["score"].mean(),
-        ls="--",
-    )
-    ax2 = plt.axhline(
-        scores_df.loc[scores_df["player"] == player2.player_name]["score"].mean(),
-        ls="--",
-        color="orange",
-    )
+    color_list = ["blue", "orange", "green"]
+    for i, player in enumerate(player_list):
+        ax1 = plt.axhline(
+            scores_df.loc[scores_df["player"] == player.player_name]["score"].mean(),
+            ls="--",
+            c=color_list[i],
+        )
 
     plt.show()
