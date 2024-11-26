@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu de Cartes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #414141;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            width: 100px;
+            height: 150px;
+            background-color: #fff;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .card.hidden {
+            background-color: #444;
+            color: transparent;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: scale(1.1);
+        }
+
+        .deck {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 20px;
+        }
+
+        .pile, .discard {
+            width: 100px;
+            height: 150px;
+            background-color: #fff;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .pile:hover, .discard:hover {
+            border-color: #007bff;
+        }
+
+        .players {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .player {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Zone des joueurs -->
+        <div class="players">
+            <div class="player" id="player1"></div>
+            <div class="player" id="player2"></div>
+            <div class="player" id="player3"></div>
+            <div class="player" id="player4"></div>
+        </div>
+
+        <!-- Zone de la pioche et de la défausse -->
+        <div class="deck">
+            <div class="pile" id="pile">Pioche</div>
+            <div class="discard" id="discard">Défausse</div>
+        </div>
+
+        <!-- Plateau principal -->
+        <div class="board" id="board"></div>
+    </div>
+
+    <script>
+        // Récupère les données depuis le serveur
+        async function fetchCardData() {
+            try {
+                const response = await fetch("http://localhost:5000/cartes");
+                const data = await response.json();
+
+                // Organiser les données
+                const { boardCards, players, pile, discard } = data;
+
+                // Afficher les cartes sur le plateau
+                displayBoardCards(boardCards);
+
+                // Afficher les cartes des joueurs
+                displayPlayerCards(players);
+
+                // Mettre à jour la pioche et la défausse
+                updateDeck(pile, discard);
+            } catch (error) {
+                console.error("Erreur lors du chargement des cartes :", error);
+            }
+        }
+
+        // Affiche les cartes sur le plateau principal
+        function displayBoardCards(cards) {
+            const board = document.getElementById("board");
+            board.innerHTML = ""; // Efface l'existant
+            cards.forEach((card, index) => {
+                const cardElement = document.createElement("div");
+                cardElement.className = `card ${card.hidden ? "hidden" : ""}`;
+                cardElement.textContent = card.hidden ? "" : card.value;
+
+                // Toggle entre caché et découvert
+                cardElement.addEventListener("click", () => {
+                    card.hidden = !card.hidden;
+                    cardElement.classList.toggle("hidden");
+                    cardElement.textContent = card.hidden ? "" : card.value;
+                });
+
+                board.appendChild(cardElement);
+            });
+        }
+
+        // Affiche les cartes des joueurs
+        function displayPlayerCards(players) {
+            for (let i = 1; i <= 4; i++) {
+                const playerDiv = document.getElementById(`player${i}`);
+                playerDiv.innerHTML = ""; // Efface l'existant
+
+                players[i - 1].forEach((card) => {
+                    const cardElement = document.createElement("div");
+                    cardElement.className = `card ${card.hidden ? "hidden" : ""}`;
+                    cardElement.textContent = card.hidden ? "" : card.value;
+
+                    // Toggle entre caché et découvert
+                    cardElement.addEventListener("click", () => {
+                        card.hidden = !card.hidden;
+                        cardElement.classList.toggle("hidden");
+                        cardElement.textContent = card.hidden ? "" : card.value;
+                    });
+
+                    playerDiv.appendChild(cardElement);
+                });
+            }
+        }
+
+        // Met à jour la pioche et la défausse
+        function updateDeck(pile, discard) {
+            const pileDiv = document.getElementById("pile");
+            const discardDiv = document.getElementById("discard");
+
+            pileDiv.textContent = `Pioche (${pile.length})`;
+            discardDiv.textContent = `Défausse (${discard.length})`;
+        }
+
+        // Charger les cartes au démarrage
+        fetchCardData();
+    </script>
+</body>
+</html>
