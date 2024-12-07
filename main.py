@@ -62,7 +62,7 @@ class CardDeck:
         card.is_visible = True
         self.discard.append(card)
 
-    def draw_card(self, is_visible: bool = False) -> Card:
+    def draw_card(self, is_visible: bool = True) -> Card:
         drawn_card = self.stack.pop()
         drawn_card.is_visible = is_visible
         return drawn_card
@@ -78,10 +78,39 @@ class CardDeck:
         return
 
 
+class Game:
+    def __init__(self, id, player_list) -> None:
+        self.id = id
+        self.player_list = []
+        for player in player_list:
+            ia_strength = 0.5
+            if player.ia_strength == "easy":
+                ia_strength = 0.7
+            elif player.ia_strength == "medium":
+                ia_strength = 0.4
+            elif player.ia_strength == "strong":
+                ia_strength = 0.2
+            if player.player_type == "human":
+                new_player = Player(player_name=player.player_name, is_bot=False)
+            else:
+                new_player = Player(
+                    player_name=player.player_name, is_bot=True, ia_strength=ia_strength
+                )
+            self.player_list.append(new_player)
+
+    def export_game_state(self):
+        {"id": self.id,
+         "game_state": {
+             discard = self.card_deck.get_discarded_card().value if len(self.card_deck) else None
+         }
+         }
+
+
 class Player:
-    def __init__(self, player_name: str) -> None:
+    def __init__(self, player_name: str, is_bot=True, ia_strength=0.5) -> None:
         self.player_name: str = player_name
         self.card_board = []
+        self.is_bot = is_bot
         self.last_turn = False
         self.q_draw_action = {}
         self.q_replace_or_reveal_action = {}
@@ -90,7 +119,7 @@ class Player:
         self.move_history = []
         self.has_won = False
         self.previous_score = None
-        self.exploration_prob = 0.5
+        self.exploration_prob = ia_strength
         self.output_folder = f"{player_name}_data/"
         if not os.path.exists(self.output_folder):
             os.makedirs(self.output_folder)

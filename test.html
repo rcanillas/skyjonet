@@ -117,7 +117,7 @@
         // Récupère les données depuis le serveur
         async function fetchCardData() {
             try {
-                const response = await fetch("http://localhost:5000/cartes");
+                const response = await fetch("http://localhost:5000/cartes",);
                 const data = await response.json();
 
                 // Organiser les données
