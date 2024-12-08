@@ -62,7 +62,7 @@ class CardDeck:
         card.is_visible = True
         self.discard.append(card)
 
-    def draw_card(self, is_visible: bool = True) -> Card:
+    def draw_card(self, is_visible: bool = False) -> Card:
         drawn_card = self.stack.pop()
         drawn_card.is_visible = is_visible
         return drawn_card
@@ -79,31 +79,92 @@ class CardDeck:
 
 
 class Game:
-    def __init__(self, id, player_list) -> None:
-        self.id = id
-        self.player_list = []
+    def __init__(self, game_id, player_list) -> None:
+        self.game_id = game_id
+        self.player_dict = {}
+        self.card_deck = CardDeck()
         for player in player_list:
-            ia_strength = 0.5
-            if player.ia_strength == "easy":
-                ia_strength = 0.7
-            elif player.ia_strength == "medium":
-                ia_strength = 0.4
-            elif player.ia_strength == "strong":
-                ia_strength = 0.2
-            if player.player_type == "human":
-                new_player = Player(player_name=player.player_name, is_bot=False)
+            if player["player_type"] == "human":
+                new_player = Player(player_name=player["player_name"], is_bot=False)
             else:
+                if player["ia_strength"] == "easy":
+                    ia_strength = 0.7
+                elif player["ia_strength"] == "medium":
+                    ia_strength = 0.4
+                elif player["ia_strength"] == "strong":
+                    ia_strength = 0.2
                 new_player = Player(
-                    player_name=player.player_name, is_bot=True, ia_strength=ia_strength
+                    player_name=player["player_name"],
+                    is_bot=True,
+                    ia_strength=ia_strength,
                 )
-            self.player_list.append(new_player)
+            new_player.draw_board(self.card_deck)
+            self.player_dict[player["player_name"]] = new_player
+        self.current_discarded_card = None
+        self.current_drawn_card = None
+        self.current_player = random.choice(
+            [p for p in self.player_dict.values() if not p.is_bot]
+        )
+        self.game_step = "init_start"
+
+    def finish_game_init(self):
+        player_list = self.player_dict.values()
+        for player in player_list:
+            if player.is_bot:
+                player.init_game()
+        self.card_deck.init_round()
+        player_ordered_turn = sorted(
+            player_list, key=lambda p: p.compute_visible_score(p.card_board)
+        )
+        for turn_number, player in enumerate(player_ordered_turn):
+            player.player_turn = turn_number
+        self.game_step = "next_player_action"
+
+    def reveal_card(self, player_name, card_x, card_y):
+        current_player = self.player_dict[player_name]
+        current_player.reveal_card(int(card_x), int(card_y))
+        if self.game_step == "init_start":
+            self.game_step = "second_init_reveal"
+        elif self.game_step == "second_init_reveal":
+            self.finish_game_init()
+        else:
+            if not current_player.has_hidden_cards():
+                self.game_step = "last_turn"
+            else:
+                next_player_turn = current_player.player_turn + 1 % len(
+                    self.player_dict
+                )
+                next_player = [
+                    p
+                    for p in self.player_dict.values()
+                    if p.player_turn == next_player_turn
+                ][0]
+                if next_player.is_bot:
+                    next_player.play_turn(self.card_deck)
+                    self.game_step = "next_player_action"
+                else:
+                    self.game_step = "next_player_action"
+
+    def draw_card(self):
+        self.current_drawn_card = self.card_deck.draw_card().value
+        self.game_step = "select_card_or_discard"
 
     def export_game_state(self):
-        {"id": self.id,
-         "game_state": {
-             discard = self.card_deck.get_discarded_card().value if len(self.card_deck) else None
-         }
-         }
+        game_state = {
+            "game_id": self.game_id,
+            "game_state": {
+                "discard": self.current_discarded_card,
+                "draw": self.current_drawn_card,
+            },
+            "player_boards": [
+                {player.player_name: player.get_player_cards(player.card_board)}
+                for player in self.player_dict.values()
+            ],
+            "current_player": self.current_player.player_name,
+            "game_step": self.game_step,
+        }
+        print(game_state)
+        return json.dumps(game_state)
 
 
 class Player:
@@ -123,6 +184,14 @@ class Player:
         self.output_folder = f"{player_name}_data/"
         if not os.path.exists(self.output_folder):
             os.makedirs(self.output_folder)
+            for table in [
+                f"{self.output_folder}draw_action_table.json",
+                f"{self.output_folder}replace_or_reveal_action_table.json",
+                f"{self.output_folder}replace_card_action_table.json",
+                f"{self.output_folder}reveal_card_action_table.json",
+            ]:
+                with open(table, "w") as table_file:
+                    table_file.write("{}")
         else:
             with open(
                 f"{self.output_folder}draw_action_table.json", "r"
@@ -157,6 +226,7 @@ class Player:
                 self.q_table_reveal_card_action = (
                     self.q_reveal_card_action | old_q_table_reveal_card_action
                 )
+        self.player_turn = 0
 
     def draw_board(self, card_deck: CardDeck) -> None:
         self.card_board = []
