@@ -40,5 +40,12 @@ def draw_card(game_id: int):
     return selected_game.export_game_state()
 
 
+@app.route("/<int:game_id>/get_discard_card", methods=["GET"])
+def get_discard_card(game_id: int):
+    selected_game = game_instances[game_id]
+    selected_game.get_discard_card()
+    return selected_game.export_game_state()
+
+
 if __name__ == "__main__":
     app.run(port=5000, debug=True)

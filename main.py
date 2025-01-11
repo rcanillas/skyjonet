@@ -100,7 +100,8 @@ class Game:
                 )
             new_player.draw_board(self.card_deck)
             self.player_dict[player["player_name"]] = new_player
-        self.current_discarded_card = None
+        self.card_deck.discard_card(self.card_deck.draw_card())
+        self.current_discarded_card = self.card_deck.discard[-1].value
         self.current_drawn_card = None
         self.current_player = random.choice(
             [p for p in self.player_dict.values() if not p.is_bot]
@@ -148,6 +149,14 @@ class Game:
     def draw_card(self):
         self.current_drawn_card = self.card_deck.draw_card().value
         self.game_step = "select_card_or_discard"
+
+    def get_discard_card(self):
+        self.current_drawn_card = self.current_discarded_card
+        new_discarded_card = self.card_deck.get_discarded_card()
+        if new_discarded_card:
+            self.current_discarded_card = new_discarded_card.value
+        else:
+            self.current_discarded_card = None
 
     def export_game_state(self):
         game_state = {
